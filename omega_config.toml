@@ -1,0 +1,15 @@
+# omega_config.toml
+[models]
+  [models.primary]
+  provider = "google"
+  model = "gemini-1.5-pro"
+  fallback = "local_neural_backup"
+
+  [models.local_neural_backup]
+  provider = "lmstudio"
+  endpoint = "http://127.0.0.1:1234/v1"
+  model = "gemma-8b-instruct"
+  compat.supportsTools = true
+
+[agents.defaults]
+  autoTransitionToLocal = true
