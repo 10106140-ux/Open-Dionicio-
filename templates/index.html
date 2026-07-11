@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROYECTO ÓMEGA - Súper Agente Autónomo</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0b0f19;
+            color: #f3f4f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .glow-blue {
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+        }
+        .glow-green {
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+        }
+        .glass {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .terminal-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb {
+            background-color: rgba(59, 130, 246, 0.3);
+            border-radius: 4px;
+        }
+        @keyframes pulse-wave {
+            0%, 100% { height: 10px; }
+            50% { height: 45px; }
+        }
+        .wave-bar {
+            width: 4px;
+            background-color: #3b82f6;
+            animation: pulse-wave 1.2s ease-in-out infinite;
+            border-radius: 2px;
+        }
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; background-color: #10b981; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; background-color: #10b981; }
+        .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+        .wave-bar:nth-child(6) { animation-delay: 0.5s; background-color: #10b981; }
+    </style>
+</head>
+<body class="p-4 md:p-6 min-h-screen flex flex-col justify-between">
+
+    <!-- Top Navigation Header -->
+    <header class="w-full max-w-7xl mx-auto glass rounded-2xl p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 shadow-2xl">
+        <div class="flex items-center gap-3">
+            <div class="p-3 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/30 animate-pulse">
+                <i class="fa-solid fa-atom text-2xl text-white"></i>
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-black tracking-wider text-white flex items-center gap-2">
+                    PROYECTO <span class="text-blue-500 glow-blue">ÓMEGA</span>
+                </h1>
+                <p class="text-xs text-gray-400 font-semibold tracking-widest uppercase">Súper Agente Autónomo Definitivo</p>
+            </div>
+        </div>
+
+        <!-- Real-Time Metrics & Configuration Fallback -->
+        <div class="flex flex-wrap items-center gap-4">
+            <!-- Offline status toggler -->
+            <div class="flex items-center gap-2 bg-gray-900/60 p-2 rounded-xl border border-gray-800">
+                <span class="text-xs font-bold text-gray-400 uppercase mr-1">Modo Local:</span>
+                <button id="toggle-offline-btn" onclick="toggleOffline()" class="px-3 py-1 text-xs font-bold rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition">
+                    Desactivado (Nube)
+                </button>
+            </div>
+
+            <!-- CPU / RAM / Latency -->
+            <div class="flex gap-3 text-xs">
+                <div class="bg-gray-900/60 p-2 rounded-xl border border-gray-800 text-center min-w-[70px]">
+                    <p class="text-gray-400 uppercase font-bold text-[10px]">CPU</p>
+                    <p id="metric-cpu" class="font-mono text-blue-400 font-bold">18%</p>
+                </div>
+                <div class="bg-gray-900/60 p-2 rounded-xl border border-gray-800 text-center min-w-[70px]">
+                    <p class="text-gray-400 uppercase font-bold text-[10px]">RAM</p>
+                    <p id="metric-ram" class="font-mono text-emerald-400 font-bold">5.2 GB</p>
+                </div>
+                <div class="bg-gray-900/60 p-2 rounded-xl border border-gray-800 text-center min-w-[70px]">
+                    <p class="text-gray-400 uppercase font-bold text-[10px]">Modelo</p>
+                    <p id="metric-model" class="font-mono text-white font-bold truncate max-w-[120px]">Gemini Cloud</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Grid Workspace -->
+    <main class="w-full max-w-7xl mx-auto flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+
+        <!-- Left Side: Core Cognitive & Zero-Trust Panel -->
+        <section class="lg:col-span-7 flex flex-col gap-6">
+
+            <!-- Chat Interface (Núcleo Cognitivo) -->
+            <div class="glass rounded-3xl p-5 flex flex-col flex-grow shadow-xl min-h-[400px]">
+                <div class="flex justify-between items-center border-b border-gray-800 pb-3 mb-4">
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-brain text-blue-400"></i> Núcleo Cognitivo (Chat de Ómega)
+                    </h2>
+                    <span class="flex items-center gap-1.5 px-2 py-1 bg-emerald-500/10 text-emerald-400 rounded-full text-[10px] font-bold border border-emerald-500/20 uppercase">
+                        <span class="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span> Activo
+                    </span>
+                </div>
+
+                <!-- Chat History Window -->
+                <div id="chat-window" class="flex-grow overflow-y-auto max-h-[300px] mb-4 space-y-3 p-2 terminal-scroll bg-gray-950/40 rounded-2xl border border-gray-900">
+                    <!-- Message bubbles -->
+                    <div class="flex gap-2">
+                        <div class="bg-blue-600/10 text-blue-400 border border-blue-500/20 p-3 rounded-2xl max-w-[85%] text-sm">
+                            <span class="font-bold text-xs text-blue-500 uppercase block mb-1">Ómega</span>
+                            Saludos. Soy Ómega, el Súper Agente Autónomo definitivo. Estoy totalmente listo para procesar solicitudes lógicas, ingesta de libros y ejecutar automatizaciones de sistemas de forma segura bajo Zero-Trust. ¿En qué puedo asistirte hoy?
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input Form -->
+                <form onsubmit="sendChatMessage(event)" class="flex gap-2">
+                    <input id="chat-input" type="text" placeholder="Escribe tu comando o consulta para Ómega..." class="flex-grow bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition text-white">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-blue-500/20 transition flex items-center gap-2">
+                        <span>Enviar</span> <i class="fa-solid fa-paper-plane text-xs"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Zero-Trust Human-In-The-Loop Authorizations -->
+            <div class="glass rounded-3xl p-5 shadow-xl">
+                <div class="flex justify-between items-center border-b border-gray-800 pb-3 mb-4">
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-yellow-500"></i> Seguridad Zero-Trust & Permisos (Human-In-The-Loop)
+                    </h2>
+                    <span class="bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase">CaMeL Secure</span>
+                </div>
+
+                <!-- Live Permission Prompts -->
+                <div id="permission-container" class="space-y-3">
+                    <p class="text-xs text-gray-400 italic">No hay solicitudes de autorización pendientes en este momento. El sistema está seguro.</p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Right Side: Universal Ingestor, Live Mode, OS Skills, and Live Logs -->
+        <section class="lg:col-span-5 flex flex-col gap-6">
+
+            <!-- Universal Reading Ingestion Panel -->
+            <div class="glass rounded-3xl p-5 shadow-xl">
+                <div class="flex justify-between items-center border-b border-gray-800 pb-3 mb-4">
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-book-open text-emerald-400"></i> Sistema de Lectura Universal (Ingesta PDF)
+                    </h2>
+                    <span class="text-gray-400 text-xs font-semibold">ChromaDB RAG</span>
+                </div>
+
+                <!-- PDF mock upload input -->
+                <form onsubmit="ingestBook(event)" class="space-y-3">
+                    <div class="flex gap-2">
+                        <input id="book-title-input" type="text" placeholder="Ej: Manual de Robótica y Cibernética.pdf" required class="flex-grow bg-gray-900 border border-gray-800 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-emerald-500 transition text-white">
+                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-lg shadow-emerald-500/20 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus"></i> Ingestar
+                        </button>
+                    </div>
+                    <!-- Ingestion Status Progress Bar -->
+                    <div id="ingest-progress-container" class="hidden">
+                        <div class="flex justify-between text-[10px] mb-1">
+                            <span class="text-emerald-400 font-bold">Procesando vectores...</span>
+                            <span id="ingest-percentage" class="font-mono text-gray-300">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-800 rounded-full h-1.5">
+                            <div id="ingest-progress-bar" class="bg-emerald-500 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Ingested Books List -->
+                <div class="mt-4 overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="text-gray-500 border-b border-gray-800 font-bold">
+                                <th class="pb-2">Documento PDF</th>
+                                <th class="pb-2">Vectores (Chunks)</th>
+                                <th class="pb-2 text-right">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="books-table-body" class="divide-y divide-gray-800/60">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- OS & Apps UI Controller Skills -->
+            <div class="glass rounded-3xl p-5 shadow-xl">
+                <div class="border-b border-gray-800 pb-3 mb-4">
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-desktop text-purple-400"></i> OS & Apps Controller (PyAutoGUI UI Tasks)
+                    </h2>
+                </div>
+
+                <form onsubmit="triggerOSAutomation(event)" class="space-y-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] uppercase text-gray-400 font-bold mb-1">App Objetivo</label>
+                            <select id="auto-app-select" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-purple-500 text-white">
+                                <option value="Microsoft Excel">Microsoft Excel</option>
+                                <option value="Google Chrome">Google Chrome</option>
+                                <option value="Terminal Linux">Terminal Linux</option>
+                                <option value="Telegram Desktop">Telegram Desktop</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase text-gray-400 font-bold mb-1">Acción / Texto</label>
+                            <input id="auto-task-input" type="text" placeholder="Ej: Escribir reporte de ventas" required class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-purple-500 text-white">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 rounded-xl text-xs shadow-lg shadow-purple-500/20 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Ejecutar con PyAutoGUI (Requiere Autorización)
+                    </button>
+                </form>
+            </div>
+
+            <!-- Live Mode (Síntesis de Voz y Audio) -->
+            <div class="glass rounded-3xl p-5 shadow-xl">
+                <div class="flex justify-between items-center border-b border-gray-800 pb-3 mb-4">
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-microphone text-rose-500"></i> Live Mode (Streaming de Voz Humana)
+                    </h2>
+                    <span id="live-mode-badge" class="px-2 py-0.5 bg-gray-800 text-gray-400 rounded-full text-[10px] font-bold uppercase">Inactivo</span>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <button id="live-play-btn" onclick="toggleLiveMode(true)" class="p-3 bg-rose-600 hover:bg-rose-500 text-white rounded-full shadow-lg shadow-rose-500/25 transition">
+                            <i class="fa-solid fa-play"></i>
+                        </button>
+                        <button id="live-stop-btn" onclick="toggleLiveMode(false)" class="p-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-full transition hidden">
+                            <i class="fa-solid fa-stop"></i>
+                        </button>
+                        <div>
+                            <p id="live-status-txt" class="text-xs text-gray-400">Latencia Sub-300ms habilitada. Presiona Play para escuchar a Ómega.</p>
+                        </div>
+                    </div>
+
+                    <!-- Voice synth animated wave -->
+                    <div id="voice-wave" class="flex gap-1 items-end h-[35px] opacity-20">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Bottom Terminal Logs -->
+    <footer class="w-full max-w-7xl mx-auto glass rounded-2xl p-4 shadow-xl">
+        <div class="flex justify-between items-center border-b border-gray-800 pb-2 mb-3">
+            <h3 class="text-xs font-black tracking-wider uppercase text-gray-400 flex items-center gap-2">
+                <i class="fa-solid fa-terminal text-blue-500"></i> Terminal de Eventos en Vivo (Ómega Core Logger)
+            </h3>
+            <span class="text-[10px] font-mono text-gray-500">Actualizando tiempo real</span>
+        </div>
+        <div id="log-console" class="h-[100px] overflow-y-auto font-mono text-[11px] text-emerald-400/90 space-y-1 bg-black/50 p-3 rounded-xl border border-gray-900 terminal-scroll">
+            <!-- Dynamic logs populated here -->
+        </div>
+    </footer>
+
+    <!-- JS Logic Script -->
+    <script>
+        let isOffline = false;
+
+        async function fetchSystemState() {
+            try {
+                const res = await fetch("/api/state");
+                const data = await res.json();
+
+                // Update metrics
+                document.getElementById("metric-cpu").innerText = data.metrics.cpu;
+                document.getElementById("metric-ram").innerText = data.metrics.ram;
+                document.getElementById("metric-model").innerText = data.current_model;
+
+                // Toggle button status
+                const toggleBtn = document.getElementById("toggle-offline-btn");
+                if (data.offline_mode) {
+                    toggleBtn.innerText = "Activo (Local Fallback)";
+                    toggleBtn.className = "px-3 py-1 text-xs font-bold rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 transition";
+                    isOffline = true;
+                } else {
+                    toggleBtn.innerText = "Desactivado (Nube)";
+                    toggleBtn.className = "px-3 py-1 text-xs font-bold rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition";
+                    isOffline = false;
+                }
+
+                // Render Ingested Books Table
+                const tableBody = document.getElementById("books-table-body");
+                tableBody.innerHTML = "";
+                data.ingested_books.forEach(b => {
+                    tableBody.innerHTML += `
+                        <tr class="hover:bg-gray-900/40 transition">
+                            <td class="py-2.5 font-semibold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-file-pdf text-rose-500"></i> ${b.title}
+                            </td>
+                            <td class="py-2.5 font-mono text-gray-400">${b.chunks}</td>
+                            <td class="py-2.5 text-right">
+                                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full text-[10px] font-bold">
+                                    ${b.status}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                // Render Pending Zero-Trust Permissions
+                const permContainer = document.getElementById("permission-container");
+                if (data.pending_permissions.length === 0) {
+                    permContainer.innerHTML = '<p class="text-xs text-gray-400 italic">No hay solicitudes de autorización pendientes en este momento. El sistema está seguro.</p>';
+                } else {
+                    permContainer.innerHTML = "";
+                    data.pending_permissions.forEach(t => {
+                        permContainer.innerHTML += `
+                            <div class="p-4 bg-yellow-500/10 border-2 border-yellow-500/40 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-lg shadow-yellow-500/5">
+                                <div>
+                                    <h4 class="text-xs font-bold text-yellow-500 uppercase flex items-center gap-1">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> AUTORIZACIÓN REQUERIDA
+                                    </h4>
+                                    <p class="text-xs text-white font-bold mt-1">${t.details}</p>
+                                    <p class="text-[10px] text-gray-400 mt-0.5">Destino: ${t.target_app} | ID: ${t.task_id}</p>
+                                </div>
+                                <div class="flex gap-2 w-full md:w-auto">
+                                    <button onclick="respondPermission('${t.task_id}', true)" class="flex-grow md:flex-none bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-1">
+                                        <i class="fa-solid fa-check"></i> Autorizar
+                                    </button>
+                                    <button onclick="respondPermission('${t.task_id}', false)" class="flex-grow md:flex-none bg-rose-600 hover:bg-rose-500 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-lg shadow-rose-500/20 transition flex items-center justify-center gap-1">
+                                        <i class="fa-solid fa-xmark"></i> Denegar
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                // Render Live Event Logs
+                const logConsole = document.getElementById("log-console");
+                logConsole.innerHTML = "";
+                data.executed_logs.forEach(l => {
+                    logConsole.innerHTML += `
+                        <div class="flex gap-2 leading-relaxed">
+                            <span class="text-gray-500 font-bold">[${l.time}]</span>
+                            <span class="text-blue-400 font-bold uppercase">${l.source}:</span>
+                            <span class="text-gray-200">${l.message}</span>
+                        </div>
+                    `;
+                });
+                logConsole.scrollTop = logConsole.scrollHeight;
+
+            } catch (err) {
+                console.error("Error fetching system state:", err);
+            }
+        }
+
+        async function toggleOffline() {
+            const nextMode = !isOffline;
+            try {
+                await fetch("/api/config", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ offline_mode: nextMode, gemini_key: "" })
+                });
+                fetchSystemState();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function sendChatMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById("chat-input");
+            const val = input.value.trim();
+            if (!val) return;
+
+            // Render user bubble instantly
+            const chatWin = document.getElementById("chat-window");
+            chatWin.innerHTML += `
+                <div class="flex justify-end gap-2">
+                    <div class="bg-gray-800 text-gray-100 border border-gray-700 p-3 rounded-2xl max-w-[85%] text-sm">
+                        <span class="font-bold text-xs text-blue-400 uppercase block mb-1">Tú (Operador)</span>
+                        ${val}
+                    </div>
+                </div>
+            `;
+            chatWin.scrollTop = chatWin.scrollHeight;
+            input.value = "";
+
+            try {
+                const res = await fetch("/api/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: val })
+                });
+                const data = await res.json();
+
+                // Render agent response
+                chatWin.innerHTML += `
+                    <div class="flex gap-2">
+                        <div class="bg-blue-600/10 text-blue-400 border border-blue-500/20 p-3 rounded-2xl max-w-[85%] text-sm">
+                            <span class="font-bold text-xs text-blue-500 uppercase block mb-1">Ómega</span>
+                            ${data.reply}
+                        </div>
+                    </div>
+                `;
+                chatWin.scrollTop = chatWin.scrollHeight;
+                fetchSystemState();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function ingestBook(e) {
+            e.preventDefault();
+            const titleInput = document.getElementById("book-title-input");
+            let title = titleInput.value.trim();
+            if (!title) return;
+            if (!title.toLowerCase().endsWith(".pdf")) {
+                title += ".pdf";
+            }
+
+            // Progress bar animation simulator
+            const container = document.getElementById("ingest-progress-container");
+            const bar = document.getElementById("ingest-progress-bar");
+            const percent = document.getElementById("ingest-percentage");
+
+            container.classList.remove("hidden");
+            bar.style.width = "0%";
+            percent.innerText = "0%";
+
+            let currentProgress = 0;
+            const timer = setInterval(async () => {
+                currentProgress += 20;
+                bar.style.width = `${currentProgress}%`;
+                percent.innerText = `${currentProgress}%`;
+
+                if (currentProgress >= 100) {
+                    clearInterval(timer);
+                    setTimeout(async () => {
+                        container.classList.add("hidden");
+
+                        // Send actual api call
+                        const fd = new FormData();
+                        fd.append("file_name", title);
+                        await fetch("/api/ingest", {
+                            method: "POST",
+                            body: fd
+                        });
+                        titleInput.value = "";
+                        fetchSystemState();
+                    }, 400);
+                }
+            }, 150);
+        }
+
+        async function triggerOSAutomation(e) {
+            e.preventDefault();
+            const app = document.getElementById("auto-app-select").value;
+            const text = document.getElementById("auto-task-input").value.trim();
+            if (!text) return;
+
+            try {
+                const fd = new FormData();
+                fd.append("task_text", text);
+                fd.append("target_app", app);
+
+                await fetch("/api/automate", {
+                    method: "POST",
+                    body: fd
+                });
+                document.getElementById("auto-task-input").value = "";
+                fetchSystemState();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function respondPermission(taskId, isApproved) {
+            try {
+                await fetch("/api/permissions", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ task_id: taskId, approved: isApproved })
+                });
+                fetchSystemState();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function toggleLiveMode(active) {
+            const playBtn = document.getElementById("live-play-btn");
+            const stopBtn = document.getElementById("live-stop-btn");
+            const statusTxt = document.getElementById("live-status-txt");
+            const badge = document.getElementById("live-mode-badge");
+            const wave = document.getElementById("voice-wave");
+
+            if (active) {
+                playBtn.classList.add("hidden");
+                stopBtn.classList.remove("hidden");
+                statusTxt.innerText = "🎙️ Streaming de voz activo: Ómega te habla con voz sintetizada ultra-baja latencia.";
+                badge.innerText = "Activo";
+                badge.className = "px-2 py-0.5 bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded-full text-[10px] font-bold uppercase animate-pulse";
+                wave.style.opacity = "1";
+            } else {
+                playBtn.classList.remove("hidden");
+                stopBtn.classList.add("hidden");
+                statusTxt.innerText = "Latencia Sub-300ms habilitada. Presiona Play para escuchar a Ómega.";
+                badge.innerText = "Inactivo";
+                badge.className = "px-2 py-0.5 bg-gray-800 text-gray-400 rounded-full text-[10px] font-bold uppercase";
+                wave.style.opacity = "0.2";
+            }
+        }
+
+        // Initialize state pulling
+        fetchSystemState();
+        setInterval(fetchSystemState, 4000);
+    </script>
+</body>
+</html>
